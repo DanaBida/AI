@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  webui:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aiptriage-webui
+    env_file:
+      - .env
+    environment:
+      WEBUI_HOST: ${WEBUI_HOST:-0.0.0.0}
+      WEBUI_SERVER_PORT: ${WEBUI_SERVER_PORT:-8501}
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal}
+      OLLAMA_PORT: ${OLLAMA_PORT:-11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3}
+      OLLAMA_CHAT_ENDPOINT: ${OLLAMA_CHAT_ENDPOINT:-/api/chat}
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-http://host.docker.internal:5678/webhook/listing-triage}
+      PROMPT_SURFACE: ${PROMPT_SURFACE:-1}
+      PROMPT_VERSION: ${PROMPT_VERSION:-v1}
+      WEBUI_APP_TITLE: ${WEBUI_APP_TITLE:-aiPropertyTriage WebUI}
+      WEBUI_REQUEST_TIMEOUT_SECONDS: ${WEBUI_REQUEST_TIMEOUT_SECONDS:-60}
+    ports:
+      - "${WEBUI_SERVER_PORT:-8501}:8501"
+    volumes:
+      - ./prompts:/app/prompts
+      - ./tests:/app/tests
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - webui_net
+
+networks:
+  webui_net:
+    driver: bridge

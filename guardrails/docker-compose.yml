@@ -1,0 +1,21 @@
+version: "3.9"
+
+services:
+  guardrails:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8011:8011"
+    volumes:
+      - ./prompts:/app/prompts
+      - ./rails:/app/rails
+    restart: on-failure
+    networks:
+      - guardrails-net
+
+networks:
+  guardrails-net:
+    driver: bridge

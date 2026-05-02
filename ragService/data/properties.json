@@ -1,0 +1,222 @@
+[
+  {
+    "id": "prop_001",
+    "price": 2500000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Haifa Downtown",
+    "condition": "Good",
+    "description": "Beautiful 3-bedroom apartment in Haifa Downtown with modern kitchen and hardwood floors. Close to shopping, dining, and sea views."
+  },
+  {
+    "id": "prop_002",
+    "price": 3800000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "rooms": 6,
+    "location": "Tel Aviv North",
+    "condition": "Excellent",
+    "description": "Luxury apartment in Tel Aviv North with panoramic city views, updated amenities, and smart home features."
+  },
+  {
+    "id": "prop_003",
+    "price": 1800000,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "rooms": 4,
+    "location": "Ramat Gan",
+    "condition": "Fair",
+    "description": "Cozy 2-bedroom apartment in Ramat Gan with large balcony, needs minor renovations."
+  },
+  {
+    "id": "prop_004",
+    "price": 3200000,
+    "bedrooms": 3,
+    "bathrooms": 2.5,
+    "rooms": 5,
+    "location": "Jerusalem Center",
+    "condition": "Excellent",
+    "description": "Contemporary apartment in Jerusalem Center with city views, open floor plan, and energy-efficient systems."
+  },
+  {
+    "id": "prop_005",
+    "price": 1600000,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "rooms": 4,
+    "location": "Tel Aviv South",
+    "condition": "Fair",
+    "description": "Compact urban apartment in Tel Aviv South with trendy loft design, exposed brick, and proximity to transit."
+  },
+  {
+    "id": "prop_006",
+    "price": 4500000,
+    "bedrooms": 5,
+    "bathrooms": 4,
+    "rooms": 7,
+    "location": "Herzliya Pituach",
+    "condition": "Excellent",
+    "description": "Elegant villa in Herzliya Pituach with 5 bedrooms, private pool, gourmet kitchen, and manicured gardens."
+  },
+  {
+    "id": "prop_007",
+    "price": 2300000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Netanya Center",
+    "condition": "Good",
+    "description": "Family-friendly apartment in Netanya Center with updated systems, new amenities, and large balcony."
+  },
+  {
+    "id": "prop_008",
+    "price": 3000000,
+    "bedrooms": 4,
+    "bathrooms": 2,
+    "rooms": 6,
+    "location": "Givatayim",
+    "condition": "Good",
+    "description": "Charming 4-bedroom apartment in Givatayim with large terrace and mature landscaping."
+  },
+  {
+    "id": "prop_009",
+    "price": 2000000,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "rooms": 4,
+    "location": "Bat Yam Beachfront",
+    "condition": "Excellent",
+    "description": "Modern beachfront apartment in Bat Yam with ocean views, floor-to-ceiling windows, and direct beach access."
+  },
+  {
+    "id": "prop_010",
+    "price": 3500000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "rooms": 6,
+    "location": "Petah Tikva",
+    "condition": "Good",
+    "description": "Spacious apartment in Petah Tikva with multiple terraces, garden views, and eco-friendly construction."
+  },
+  {
+    "id": "prop_011",
+    "price": 2800000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Tel Aviv Downtown",
+    "condition": "Good",
+    "description": "Renovated apartment in Tel Aviv Downtown with rooftop access, stainless steel appliances, and parking."
+  },
+  {
+    "id": "prop_012",
+    "price": 2200000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Kfar Saba",
+    "condition": "Fair",
+    "description": "Spacious apartment in Kfar Saba with good structure, updated interior, and potential for improvement."
+  },
+  {
+    "id": "prop_013",
+    "price": 4100000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "rooms": 6,
+    "location": "Ramat Hasharon",
+    "condition": "Excellent",
+    "description": "Stunning villa in Ramat Hasharon with infinity pool, wine cellar, and resort-quality amenities."
+  },
+  {
+    "id": "prop_014",
+    "price": 1900000,
+    "bedrooms": 2,
+    "bathrooms": 1,
+    "rooms": 4,
+    "location": "Jaffa Old City",
+    "condition": "Fair",
+    "description": "Historic loft in Jaffa Old City with exposed stone walls, high ceilings, and artistic character."
+  },
+  {
+    "id": "prop_015",
+    "price": 3400000,
+    "bedrooms": 4,
+    "bathrooms": 2.5,
+    "rooms": 6,
+    "location": "Rishon LeZion",
+    "condition": "Good",
+    "description": "Gated community apartment in Rishon LeZion with resort amenities, 24/7 security, and pristine grounds."
+  },
+  {
+    "id": "prop_016",
+    "price": 2250000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Hadera",
+    "condition": "Good",
+    "description": "Charming apartment in Hadera with updated kitchen, stone fireplace, and scenic location."
+  },
+  {
+    "id": "prop_017",
+    "price": 3700000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "rooms": 6,
+    "location": "Jerusalem Hills",
+    "condition": "Excellent",
+    "description": "Modern villa in Jerusalem Hills with smart systems, solar panels, and expansive views."
+  },
+  {
+    "id": "prop_018",
+    "price": 1950000,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "rooms": 4,
+    "location": "Modiin",
+    "condition": "Excellent",
+    "description": "Newly constructed apartment in Modiin with open concept, energy efficient, and move-in ready."
+  },
+  {
+    "id": "prop_019",
+    "price": 3100000,
+    "bedrooms": 3,
+    "bathrooms": 2.5,
+    "rooms": 5,
+    "location": "Netanya Beachfront",
+    "condition": "Good",
+    "description": "Beachside apartment in Netanya with sea views, updated amenities, and private access to beach."
+  },
+  {
+    "id": "prop_020",
+    "price": 2900000,
+    "bedrooms": 3,
+    "bathrooms": 2,
+    "rooms": 5,
+    "location": "Ramat Gan East",
+    "condition": "Excellent",
+    "description": "Upscale apartment in Ramat Gan East with smart home technology, concierge service, and garden access."
+  },
+  {
+    "id": "prop_021",
+    "price": 3900000,
+    "bedrooms": 4,
+    "bathrooms": 3,
+    "rooms": 6,
+    "location": "Kfar Saba Premium",
+    "condition": "Excellent",
+    "description": "Premium villa in Kfar Saba with golf course proximity, climate control, and security system."
+  },
+  {
+    "id": "prop_022",
+    "price": 2100000,
+    "bedrooms": 2,
+    "bathrooms": 2,
+    "rooms": 4,
+    "location": "Beer Sheva Center",
+    "condition": "Good",
+    "description": "Modern apartment in Beer Sheva Center with updated fixtures, park views, and walkable neighborhood."
+  }
+]

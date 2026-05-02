@@ -1,0 +1,31 @@
+{
+  "dataset_total_images": 4139,
+  "room_types": [
+    "kitchen",
+    "bathroom",
+    "living room",
+    "bedroom",
+    "other"
+  ],
+  "base_model": "efficientnet_b0_pretrained",
+  "transfer_learning": "frozen_backbone_train_heads",
+  "augmentation": {
+    "train": [
+      "RandomResizedCrop(224, scale=(0.7, 1.0))",
+      "RandomHorizontalFlip(0.5)",
+      "RandomRotation(12)",
+      "ColorJitter(0.2,0.2,0.2)",
+      "ImageNet normalization"
+    ],
+    "eval": [
+      "Resize(256)",
+      "CenterCrop(224)",
+      "ImageNet normalization"
+    ]
+  },
+  "best_val_accuracy": 0.6742,
+  "best_epoch": 2,
+  "final_test_accuracy": 0.6703,
+  "final_test_condition_mae": 1.0552,
+  "checkpoint_path": "models\\efficientnet_multihead_best.pt"
+}

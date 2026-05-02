@@ -1,0 +1,25 @@
+# Web Framework
+fastapi==0.104.1
+uvicorn==0.24.0
+
+# Vector Store & Embeddings
+chromadb==0.4.15
+sentence-transformers==2.2.2
+transformers==4.41.2
+huggingface-hub==0.25.2
+torch==2.0.1
+
+# Model Runtime
+llama-cpp-python==0.2.26
+
+# Validation & Configuration
+pydantic==2.5.0
+python-dotenv==1.0.0
+
+# HTTP & Utilities
+requests==2.31.0
+httpx==0.25.1
+numpy==1.24.3
+
+# Testing
+pytest==7.4.3

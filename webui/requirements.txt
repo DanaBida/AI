@@ -1,0 +1,12 @@
+# Web UI
+streamlit==1.33.0
+
+# Data Models and Validation
+pydantic==2.7.1
+
+# HTTP and Configuration
+requests==2.31.0
+python-dotenv==1.0.1
+
+# Testing
+pytest==8.2.0

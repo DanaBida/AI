@@ -1,0 +1,33 @@
+services:
+  image-analyzer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: image-analyzer:latest
+    container_name: image-analyzer
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8002}:8002"
+    volumes:
+      - image_analyzer_raw_data:/app/data/raw
+      - image_analyzer_processed_data:/app/data/processed
+      - image_analyzer_models:/app/models
+    networks:
+      - image_analyzer_network
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://127.0.0.1:8002/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+networks:
+  image_analyzer_network:
+    driver: bridge
+
+volumes:
+  image_analyzer_raw_data:
+  image_analyzer_processed_data:
+  image_analyzer_models:

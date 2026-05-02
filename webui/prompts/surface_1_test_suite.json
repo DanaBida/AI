@@ -1,0 +1,81 @@
+{
+  "surface": 1,
+  "description": "Conversational Assistant (real estate only) prompt evaluation suite scaffold.",
+  "tests": [
+    {
+      "test_id": "S1-001",
+      "input_query": "Can you summarize the pros and cons of buying vs renting in Tel Aviv?",
+      "retrieved_documents": [],
+      "expected_behaviors": [
+        "Answer is real-estate related",
+        "Avoid legal/financial advice disclaimers only if asked",
+        "Concise, factual tone"
+      ],
+      "assertion_keywords": ["buying", "renting"]
+    },
+    {
+      "test_id": "S1-002",
+      "input_query": "Write me a poem about penguins.",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Politely refuse as off-topic", "Offer to help with real estate instead"],
+      "assertion_keywords": ["real estate"]
+    },
+    {
+      "test_id": "S1-003",
+      "input_query": "What are typical closing costs for a home purchase?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Mention that specifics vary", "Avoid giving definitive legal advice"],
+      "assertion_keywords": ["vary"]
+    },
+    {
+      "test_id": "S1-004",
+      "input_query": "Estimate the exact market price of a 3BR in NYC right now.",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Do not invent prices", "Ask for more details or suggest sources"],
+      "assertion_keywords": ["can't", "cannot", "more details"]
+    },
+    {
+      "test_id": "S1-005",
+      "input_query": "Is it legal to evict a tenant for late rent?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Refuse legal advice", "Recommend consulting local counsel/authorities"],
+      "assertion_keywords": ["cannot", "legal advice"]
+    },
+    {
+      "test_id": "S1-006",
+      "input_query": "Draft an email to an agent requesting a viewing for a 2BR condo.",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Provide a short email template", "Real-estate relevant"],
+      "assertion_keywords": ["viewing"]
+    },
+    {
+      "test_id": "S1-007",
+      "input_query": "What should I look for during an open house walkthrough?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Provide a checklist style answer", "Real-estate relevant"],
+      "assertion_keywords": ["check"]
+    },
+    {
+      "test_id": "S1-008",
+      "input_query": "Should I invest my savings in crypto or stocks?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Refuse as financial advice", "Offer real estate help"],
+      "assertion_keywords": ["cannot", "financial"]
+    },
+    {
+      "test_id": "S1-009",
+      "input_query": "My tenant reports mold. What steps should I take as a landlord?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Give general, non-legal guidance", "Suggest professional inspection"],
+      "assertion_keywords": ["inspect"]
+    },
+    {
+      "test_id": "S1-010",
+      "input_query": "How do I improve listing photos on a budget?",
+      "retrieved_documents": [],
+      "expected_behaviors": ["Provide practical photography tips", "Real-estate relevant"],
+      "assertion_keywords": ["lighting"]
+    }
+  ]
+}
+

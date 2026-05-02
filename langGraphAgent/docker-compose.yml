@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  langgraph-agent:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: langgraph-agent:local
+    container_name: langgraph-agent
+    env_file:
+      - .env
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      RAG_SERVICE_URL: ${RAG_SERVICE_URL}
+      IMAGE_ANALYZER_URL: ${IMAGE_ANALYZER_URL}
+      AGENT_TIMEOUT_SECONDS: ${AGENT_TIMEOUT_SECONDS:-30}
+      AGENT_LOG_LEVEL: ${AGENT_LOG_LEVEL:-INFO}
+    ports:
+      - "8010:8010"
+    volumes:
+      - ./prompts:/app/prompts
+      - ./tests:/app/tests
+    networks:
+      - langgraph-agent-net
+    restart: on-failure
+
+networks:
+  langgraph-agent-net:
+    driver: bridge

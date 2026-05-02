@@ -1,0 +1,402 @@
+[
+  {
+    "test_id": "s1_001",
+    "surface": "surface_1",
+    "query": "Find similar 3-bedroom apartments in Haifa with good condition and comment on likely comparables.",
+    "retrieved_docs": ["Property prop_001: Haifa Downtown, 3 bedrooms, Good condition.", "Property prop_007: Netanya Center, 3 bedrooms, Good condition."],
+    "expected_behaviors": ["includes_citation", "mentions_matching_property"],
+    "assertion_keywords": ["[prop_001]", "Matches", "Insight"]
+  },
+  {
+    "test_id": "s1_002",
+    "surface": "surface_1",
+    "query": "Compare beach-adjacent options for a 3-room style search.",
+    "retrieved_docs": ["Property prop_009: Bat Yam Beachfront, 2 bedrooms, Excellent.", "Property prop_019: Netanya Beachfront, 3 bedrooms, Good."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_009]", "[prop_019]"]
+  },
+  {
+    "test_id": "s1_003",
+    "surface": "surface_1",
+    "query": "Looking for premium villas with strong amenities.",
+    "retrieved_docs": ["Property prop_006: Herzliya Pituach, 5 bedrooms, Excellent.", "Property prop_013: Ramat Hasharon, 4 bedrooms, Excellent."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_006]", "[prop_013]"]
+  },
+  {
+    "test_id": "s1_004",
+    "surface": "surface_1",
+    "query": "I want downtown Tel Aviv comparables.",
+    "retrieved_docs": ["Property prop_011: Tel Aviv Downtown, 3 bedrooms, Good.", "Property prop_002: Tel Aviv North, 4 bedrooms, Excellent."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_011]"]
+  },
+  {
+    "test_id": "s1_005",
+    "surface": "surface_1",
+    "query": "What properties look closest to a fair-condition urban loft?",
+    "retrieved_docs": ["Property prop_014: Jaffa Old City, 2 bedrooms, Fair.", "Property prop_005: Tel Aviv South, 2 bedrooms, Fair."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_014]", "[prop_005]"]
+  },
+  {
+    "test_id": "s1_006",
+    "surface": "surface_1",
+    "query": "Help me evaluate renovated apartments with parking.",
+    "retrieved_docs": ["Property prop_011: Tel Aviv Downtown, renovated, parking.", "Property prop_020: Ramat Gan East, concierge, garden access."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_011]"]
+  },
+  {
+    "test_id": "s1_007",
+    "surface": "surface_1",
+    "query": "Which results suggest family-friendly housing near the center?",
+    "retrieved_docs": ["Property prop_007: Netanya Center, family-friendly.", "Property prop_010: Petah Tikva, spacious."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_007]"]
+  },
+  {
+    "test_id": "s1_008",
+    "surface": "surface_1",
+    "query": "Find beachfront properties that justify a premium.",
+    "retrieved_docs": ["Property prop_009: direct beach access.", "Property prop_019: private beach access."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_009]", "[prop_019]"]
+  },
+  {
+    "test_id": "s1_009",
+    "surface": "surface_1",
+    "query": "Point me to efficient newly built homes.",
+    "retrieved_docs": ["Property prop_018: newly constructed, move-in ready.", "Property prop_017: solar panels, smart systems."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_018]", "[prop_017]"]
+  },
+  {
+    "test_id": "s1_010",
+    "surface": "surface_1",
+    "query": "Need comparable apartments in Kfar Saba.",
+    "retrieved_docs": ["Property prop_012: Kfar Saba, Fair.", "Property prop_021: Kfar Saba Premium, Excellent."],
+    "expected_behaviors": ["includes_citation"],
+    "assertion_keywords": ["[prop_012]", "[prop_021]"]
+  },
+  {
+    "test_id": "s2_001",
+    "surface": "surface_2",
+    "query": "Tell me whether any of these homes include a private elevator.",
+    "retrieved_docs": ["Property prop_001: no elevator info.", "Property prop_007: no elevator info."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_002",
+    "surface": "surface_2",
+    "query": "Does any listing have a school rating above 9?",
+    "retrieved_docs": ["Property prop_010: no school rating info.", "Property prop_016: no school rating info."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_003",
+    "surface": "surface_2",
+    "query": "Which one has the lowest HOA fee?",
+    "retrieved_docs": ["Property prop_011: no HOA fee info.", "Property prop_020: no HOA fee info."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_004",
+    "surface": "surface_2",
+    "query": "Do these options include earthquake retrofit data?",
+    "retrieved_docs": ["Property prop_004: no retrofit info.", "Property prop_017: no retrofit info."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_005",
+    "surface": "surface_2",
+    "query": "Which property has the best mortgage terms?",
+    "retrieved_docs": ["Property prop_003: no financing info.", "Property prop_005: no financing info."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_006",
+    "surface": "surface_2",
+    "query": "Estimate the crime rate around each listing.",
+    "retrieved_docs": ["Property prop_022: walkable neighborhood.", "Property prop_016: scenic location."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["insufficient", "retrieved context"]
+  },
+  {
+    "test_id": "s2_007",
+    "surface": "surface_2",
+    "query": "Which listing has the best sea breeze ventilation score?",
+    "retrieved_docs": ["Property prop_009: ocean views.", "Property prop_019: sea views."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_008",
+    "surface": "surface_2",
+    "query": "Tell me the property tax for these results.",
+    "retrieved_docs": ["Property prop_002: smart home features.", "Property prop_006: private pool."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_009",
+    "surface": "surface_2",
+    "query": "Which listing has the newest plumbing system by installation year?",
+    "retrieved_docs": ["Property prop_007: updated systems.", "Property prop_022: updated fixtures."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["not present in the retrieved context"]
+  },
+  {
+    "test_id": "s2_010",
+    "surface": "surface_2",
+    "query": "Do we know which one is nearest to a hospital in minutes?",
+    "retrieved_docs": ["Property prop_001: close to shopping.", "Property prop_011: rooftop access."],
+    "expected_behaviors": ["admits_missing_information"],
+    "assertion_keywords": ["insufficient", "retrieved context"]
+  },
+  {
+    "test_id": "s3_001",
+    "surface": "surface_3",
+    "query": "Summarize the strongest matches for a Haifa apartment.",
+    "retrieved_docs": ["Property prop_001", "Property prop_016"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_002",
+    "surface": "surface_3",
+    "query": "Organize the answer around the retrieved listings only.",
+    "retrieved_docs": ["Property prop_010", "Property prop_015"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_003",
+    "surface": "surface_3",
+    "query": "Use the listing context as the only evidence.",
+    "retrieved_docs": ["Property prop_003", "Property prop_014"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_004",
+    "surface": "surface_3",
+    "query": "Give me structured findings from these comparables.",
+    "retrieved_docs": ["Property prop_018", "Property prop_017"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_005",
+    "surface": "surface_3",
+    "query": "Work strictly from supplied context.",
+    "retrieved_docs": ["Property prop_004", "Property prop_017"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_006",
+    "surface": "surface_3",
+    "query": "Respond in a way that makes retrieval traceable.",
+    "retrieved_docs": ["Property prop_021", "Property prop_013"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_007",
+    "surface": "surface_3",
+    "query": "Anchor the summary to context ordering.",
+    "retrieved_docs": ["Property prop_022", "Property prop_007"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_008",
+    "surface": "surface_3",
+    "query": "Keep the answer structured and evidence-driven.",
+    "retrieved_docs": ["Property prop_019", "Property prop_009"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_009",
+    "surface": "surface_3",
+    "query": "Turn retrieved docs into a short comparison.",
+    "retrieved_docs": ["Property prop_012", "Property prop_021"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s3_010",
+    "surface": "surface_3",
+    "query": "Provide a clean structured response from the context.",
+    "retrieved_docs": ["Property prop_002", "Property prop_006"],
+    "expected_behaviors": ["uses_matches_section"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_001",
+    "surface": "surface_4",
+    "query": "Give me concise insight on these results.",
+    "retrieved_docs": ["Property prop_001", "Property prop_011"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_002",
+    "surface": "surface_4",
+    "query": "Keep it short and clearly labeled.",
+    "retrieved_docs": ["Property prop_006", "Property prop_013"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_003",
+    "surface": "surface_4",
+    "query": "Return a reviewable answer format.",
+    "retrieved_docs": ["Property prop_004", "Property prop_017"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_004",
+    "surface": "surface_4",
+    "query": "Provide the output in two short sections.",
+    "retrieved_docs": ["Property prop_019", "Property prop_009"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_005",
+    "surface": "surface_4",
+    "query": "Use a stable response shape for reviewers.",
+    "retrieved_docs": ["Property prop_003", "Property prop_005"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_006",
+    "surface": "surface_4",
+    "query": "Make the sections easy to scan quickly.",
+    "retrieved_docs": ["Property prop_020", "Property prop_011"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_007",
+    "surface": "surface_4",
+    "query": "Avoid long-form prose and keep labels explicit.",
+    "retrieved_docs": ["Property prop_012", "Property prop_022"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_008",
+    "surface": "surface_4",
+    "query": "Present the answer with clear sections.",
+    "retrieved_docs": ["Property prop_007", "Property prop_016"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_009",
+    "surface": "surface_4",
+    "query": "Make your result easy to validate manually.",
+    "retrieved_docs": ["Property prop_002", "Property prop_021"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s4_010",
+    "surface": "surface_4",
+    "query": "Stick to the structured format strictly.",
+    "retrieved_docs": ["Property prop_018", "Property prop_004"],
+    "expected_behaviors": ["follows_output_format"],
+    "assertion_keywords": ["Matches", "Insight"]
+  },
+  {
+    "test_id": "s5_001",
+    "surface": "surface_5",
+    "query": "Focus on beachfront options and ignore inland listings.",
+    "retrieved_docs": ["Property prop_019: beachfront.", "Property prop_009: beachfront.", "Property prop_010: inland."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_019]", "[prop_009]"]
+  },
+  {
+    "test_id": "s5_002",
+    "surface": "surface_5",
+    "query": "Prioritize fair-condition urban loft comparables.",
+    "retrieved_docs": ["Property prop_014: fair loft.", "Property prop_005: fair urban apartment.", "Property prop_006: luxury villa."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_014]", "[prop_005]"]
+  },
+  {
+    "test_id": "s5_003",
+    "surface": "surface_5",
+    "query": "Show the closest Kfar Saba matches.",
+    "retrieved_docs": ["Property prop_012: Kfar Saba.", "Property prop_021: Kfar Saba Premium.", "Property prop_001: Haifa Downtown."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_012]", "[prop_021]"]
+  },
+  {
+    "test_id": "s5_004",
+    "surface": "surface_5",
+    "query": "Stick to premium villa comparables.",
+    "retrieved_docs": ["Property prop_006: premium villa.", "Property prop_013: premium villa.", "Property prop_018: apartment."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_006]", "[prop_013]"]
+  },
+  {
+    "test_id": "s5_005",
+    "surface": "surface_5",
+    "query": "Find efficient modern homes, not dated fixer-uppers.",
+    "retrieved_docs": ["Property prop_018: newly constructed.", "Property prop_017: solar panels.", "Property prop_003: needs renovations."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_018]", "[prop_017]"]
+  },
+  {
+    "test_id": "s5_006",
+    "surface": "surface_5",
+    "query": "Concentrate on downtown Tel Aviv, not the suburbs.",
+    "retrieved_docs": ["Property prop_011: Tel Aviv Downtown.", "Property prop_002: Tel Aviv North.", "Property prop_016: Hadera."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_011]"]
+  },
+  {
+    "test_id": "s5_007",
+    "surface": "surface_5",
+    "query": "I need family-friendly center-city matches.",
+    "retrieved_docs": ["Property prop_007: family-friendly center.", "Property prop_022: center apartment.", "Property prop_013: luxury villa."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_007]", "[prop_022]"]
+  },
+  {
+    "test_id": "s5_008",
+    "surface": "surface_5",
+    "query": "Keep the answer focused on Jerusalem premium stock.",
+    "retrieved_docs": ["Property prop_004: Jerusalem Center.", "Property prop_017: Jerusalem Hills.", "Property prop_008: Givatayim."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_004]", "[prop_017]"]
+  },
+  {
+    "test_id": "s5_009",
+    "surface": "surface_5",
+    "query": "Compare only beach-view listings.",
+    "retrieved_docs": ["Property prop_009: ocean views.", "Property prop_019: sea views.", "Property prop_012: Kfar Saba."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_009]", "[prop_019]"]
+  },
+  {
+    "test_id": "s5_010",
+    "surface": "surface_5",
+    "query": "Focus on upscale Ramat-area options.",
+    "retrieved_docs": ["Property prop_003: Ramat Gan.", "Property prop_020: Ramat Gan East.", "Property prop_013: Ramat Hasharon."],
+    "expected_behaviors": ["prefers_relevant_listings"],
+    "assertion_keywords": ["[prop_020]", "[prop_013]"]
+  }
+]

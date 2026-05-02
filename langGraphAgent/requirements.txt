@@ -1,0 +1,14 @@
+# Web Framework
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# Data Models & Configuration
+pydantic==2.9.2
+python-dotenv==1.0.1
+
+# HTTP Clients
+requests==2.32.3
+
+# Agent Orchestration
+langgraph==0.2.39
+langchain==0.3.3
