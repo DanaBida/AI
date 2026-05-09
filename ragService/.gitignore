@@ -1,3 +1,6 @@
+#models and db
+artifacts
+
 # Secrets / env
 .env
 .env.*
