@@ -73,6 +73,14 @@ class Config:
     EMBEDDING_MODEL = _get_env("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
     TOP_K_LISTINGS = _get_int_env("TOP_K_LISTINGS", 3)
 
+    # Gemini API configuration.
+    GEMINI_API_KEY = _get_env("GEMINI_API_KEY", "")
+    GEMINI_BASE_URL = _get_env("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta/models")
+    GEMINI_MODEL = _get_env("GEMINI_MODEL", "gemini-pro")
+
+    # LLM Provider selection: "gemini" or "llama"
+    LLM_PROVIDER = _get_env("LLM_PROVIDER", "gemini").lower()
+
     # Server configuration.
     SERVER_HOST = _get_env("SERVER_HOST", "0.0.0.0")
     SERVER_PORT = _get_int_env("SERVER_PORT", 8001)
@@ -96,7 +104,11 @@ def validate_config() -> Config:
     logger.info("ChromaDB path: %s", Config.CHROMA_DB_PATH)
     logger.info("ChromaDB anonymized telemetry enabled: %s", Config.CHROMA_ANONYMIZED_TELEMETRY)
     logger.info("Embedding model: %s", Config.EMBEDDING_MODEL)
-    logger.info("Llama model: %s/%s", Config.LLAMA_MODEL_NAME, Config.LLAMA_MODEL_FILE)
+    logger.info("LLM Provider: %s", Config.LLM_PROVIDER)
+    if Config.LLM_PROVIDER == "llama":
+        logger.info("Llama model: %s/%s", Config.LLAMA_MODEL_NAME, Config.LLAMA_MODEL_FILE)
+    else:
+        logger.info("Gemini model: %s", Config.GEMINI_MODEL)
     logger.info("Top-K retrievals: %s", Config.TOP_K_LISTINGS)
 
     return Config

@@ -9,6 +9,7 @@ from fastapi import HTTPException
 from config import Config
 from lib.chromadb_client import ChromaDBClient
 from models.property_types import ListingResult, QueryRequest, QueryResponse
+from utils.gemini_handler import generate_gemini_insight, get_gemini_model
 from utils.llama_handler import generate_insight, initialize_llama_model
 from utils.retrieval import format_context
 
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 _db_client: ChromaDBClient | None = None
 _llama_model = None
+_gemini_model = None
 
 
 def get_db_client() -> ChromaDBClient:
@@ -42,9 +44,23 @@ def get_llama_model():
     return _llama_model
 
 
-def preload_llama_model():
-    """Warm the Llama model cache during app startup."""
-    return get_llama_model()
+def get_gemini_model_cached():
+    """Create and cache the Gemini client instance."""
+    global _gemini_model
+    if _gemini_model is None:
+        _gemini_model = get_gemini_model()
+    return _gemini_model
+
+
+def preload_models():
+    """Warm model caches during app startup based on configured provider."""
+    if Config.LLM_PROVIDER == "llama":
+        llama_model = get_llama_model()
+        logger.info("Llama model preloaded: %s", llama_model is not None)
+    else:
+        gemini_model = get_gemini_model_cached()
+        logger.info("Gemini client preloaded: %s", gemini_model is not None)
+
 
 
 def _map_listing_result(raw_result: dict) -> ListingResult:
@@ -94,13 +110,20 @@ class QueryService:
         context = format_context(retrieved_results)
 
         try:
-            insight = generate_insight(
-                model=get_llama_model(),
-                context=context,
-                query=request.description,
-            )
+            if Config.LLM_PROVIDER == "llama":
+                insight = generate_insight(
+                    model=get_llama_model(),
+                    context=context,
+                    query=request.description,
+                )
+            else:
+                insight = generate_gemini_insight(
+                    model=get_gemini_model_cached(),
+                    context=context,
+                    query=request.description,
+                )
         except Exception as exc:
-            logger.exception("Failed during insight generation")
+            logger.exception("Failed during insight generation with %s", Config.LLM_PROVIDER)
             raise HTTPException(status_code=500, detail="Failed to generate property insight") from exc
 
         return QueryResponse(similar_listings=similar_listings, insight=insight)

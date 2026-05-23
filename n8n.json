@@ -1,0 +1,125 @@
+{
+  "nodes": [
+    {
+      "name": "WebhookTrigger",
+      "type": "n8n-nodes-base.webhookTrigger",
+      "typeVersion": 1,
+      "position": [250, 300],
+      "credentials": {
+        "someCredential": "someValue"
+      },
+      "properties": {
+        "triggerOptions": {
+          "method": "POST"
+        },
+        "responseOptions": {
+          "parseBody": true
+        }
+      },
+      "connections": ["main"]
+    },
+    {
+      "name": "GuardrailsInputCheck",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [250, 100],
+      "credentials": {
+        "someCredential": "someValue"
+      },
+      "properties": {
+        "method": "POST",
+        "endpoint": "{{$node[\"WebhookTrigger\"].json[\"guardrailsInputEndpoint\"]}}",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{{$node[\"WebhookTrigger\"].json[\"guardrailsInputBody\"]}}"
+      },
+      "connections": ["main"]
+    },
+    {
+      "name": "IFPassFailBranch",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [250, 0],
+      "properties": {
+        "condition": "{{$node[\"GuardrailsInputCheck\"].json[\"response\"].data.pass}}"
+      },
+      "connections": ["main", "RejectionPath", "SuccessPath"]
+    },
+    {
+      "name": "InformationExtractor",
+      "type": "n8n-nodes-base.informationExtractor",
+      "typeVersion": 1,
+      "position": [400, 300],
+      "properties": {
+        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"promptTemplate\"]}}"
+      },
+      "connections": ["SuccessPath"]
+    },
+    {
+      "name": "AIAgent",
+      "type": "n8n-nodes-base.aiAgent",
+      "typeVersion": 1,
+      "position": [400, 200],
+      "properties": {
+        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"agentPrompt\"]}}"
+      },
+      "connections": ["InformationExtractor"]
+    },
+    {
+      "name": "LLMChain",
+      "type": "n8n-nodes-base.llmChain",
+      "typeVersion": 1,
+      "position": [400, 100],
+      "properties": {
+        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"llmChainPrompt\"]}}"
+      },
+      "connections": ["AIAgent"]
+    },
+    {
+      "name": "GuardrailsOutputCheck",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [250, 400],
+      "credentials": {
+        "someCredential": "someValue"
+      },
+      "properties": {
+        "method": "POST",
+        "endpoint": "{{$node[\"WebhookTrigger\"].json[\"guardrailsOutputEndpoint\"]}}",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": "{{$node[\"LLMChain\".json[\"output\"]}}"
+      },
+      "connections": ["LLMChain"]
+    }
+  ],
+  "connections": [
+    {
+      "source": "WebhookTrigger",
+      "target": "GuardrailsInputCheck"
+    },
+    {
+      "source": "GuardrailsInputCheck",
+      "target": "IFPassFailBranch"
+    },
+    {
+      "source": "IFPassFailBranch",
+      "target": "InformationExtractor",
+      "condition": true
+    },
+    {
+      "source": "InformationExtractor",
+      "target": "AIAgent"
+    },
+    {
+      "source": "AIAgent",
+      "target": "LLMChain"
+    },
+    {
+      "source": "LLMChain",
+      "target": "GuardrailsOutputCheck"
+    }
+  ]
+}

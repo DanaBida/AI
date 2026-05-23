@@ -10,7 +10,8 @@ from fastapi import FastAPI
 from config import Config, validate_config
 from controllers.property_controller import router as property_router
 from middlewares.logging_middleware import LoggingMiddleware
-from services.query_service import preload_llama_model
+from services.query_service import preload_models
+
 
 logging.basicConfig(level=Config.LOG_LEVEL)
 logger = logging.getLogger(__name__)
@@ -20,8 +21,7 @@ logger = logging.getLogger(__name__)
 async def lifespan(_: FastAPI):
     """Validate configuration and warm critical dependencies on startup."""
     validate_config()
-    llama_model = preload_llama_model()
-    logger.info("Llama model preloaded during startup: %s", llama_model is not None)
+    preload_models()
     logger.info("RAG property listing service startup complete")
     yield
     logger.info("RAG property listing service shutdown complete")
