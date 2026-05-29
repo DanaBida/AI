@@ -18,3 +18,4 @@ class Config:
     EXTERNAL_API_TIMEOUT_SECONDS = int(os.getenv("EXTERNAL_API_TIMEOUT_SECONDS", "600"))
     AGENT_TIMEOUT_SECONDS = int(os.getenv("AGENT_TIMEOUT_SECONDS", "30"))
     AGENT_LOG_LEVEL = os.getenv("AGENT_LOG_LEVEL", "INFO")
+    MAX_QUERY_LENGTH = int(os.getenv("MAX_QUERY_LENGTH", "5000"))

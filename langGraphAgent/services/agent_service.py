@@ -11,8 +11,6 @@ from lib.langgraph_agent import PropertyAgent
 class AgentService:
     """Application service for executing the property agent."""
 
-    MAX_QUERY_LENGTH = 2000
-
     @classmethod
     def _validate_query(cls, query: str) -> str:
         if not isinstance(query, str):
@@ -22,9 +20,9 @@ class AgentService:
         if not normalized_query:
             raise ValueError("Query must not be empty.")
 
-        if len(normalized_query) > cls.MAX_QUERY_LENGTH:
+        if len(normalized_query) > Config.MAX_QUERY_LENGTH:
             raise ValueError(
-                f"Query must be {cls.MAX_QUERY_LENGTH} characters or fewer."
+                f"Query must be {Config.MAX_QUERY_LENGTH} characters or fewer."
             )
 
         return normalized_query

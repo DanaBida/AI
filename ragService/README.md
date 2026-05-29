@@ -43,7 +43,7 @@ Design decisions:
 2. Install dependencies with `pip install -r requirements.txt`.
 3. Copy `.env.example` to `.env`.
 4. Load synthetic data with `python data/load_synthetic_data.py`.
-5. Run the API with `uvicorn app:app --reload --host 0.0.0.0 --port 8000`.
+5. Run the API with `uvicorn app:app --reload --host 0.0.0.0 --port 8001`.
 6. On startup, the service preloads the configured GGUF model so the download does not wait for the first `/query` request.
 
 ### Docker Deployment
@@ -52,7 +52,7 @@ Design decisions:
 2. Build and start with `docker-compose up --build`.
 3. The container automatically seeds ChromaDB on startup when the collection is empty.
 4. The FastAPI startup lifecycle preloads the configured GGUF model into `/app/artifacts/models`.
-5. The API becomes available on `http://localhost:8000`.
+5. The API becomes available on `http://localhost:8001`.
 6. Chroma data persists in `chroma_data` and GGUF models persist in `model_data`.
 
 ## API Documentation
@@ -98,42 +98,42 @@ Example response: (took 9 minutes to generate locally)
 
 ```json
 {
-    "similar_listings": [
-        {
-            "id": "prop_001",
-            "price": 2500000,
-            "bedrooms": 3,
-            "bathrooms": 2.0,
-            "rooms": 5,
-            "location": "Haifa Downtown",
-            "condition": "Good",
-            "description": "Beautiful 3-bedroom apartment in Haifa Downtown with modern kitchen and hardwood floors. Close to shopping, dining, and sea views.",
-            "distance": 0.2273300653582151
-        },
-        {
-            "id": "prop_004",
-            "price": 3200000,
-            "bedrooms": 3,
-            "bathrooms": 2.5,
-            "rooms": 5,
-            "location": "Jerusalem Center",
-            "condition": "Excellent",
-            "description": "Contemporary apartment in Jerusalem Center with city views, open floor plan, and energy-efficient systems.",
-            "distance": 0.421129737994125
-        },
-        {
-            "id": "prop_002",
-            "price": 3800000,
-            "bedrooms": 4,
-            "bathrooms": 3.0,
-            "rooms": 6,
-            "location": "Tel Aviv North",
-            "condition": "Excellent",
-            "description": "Luxury apartment in Tel Aviv North with panoramic city views, updated amenities, and smart home features.",
-            "distance": 0.42452008541576847
-        }
-    ],
-    "insight": "A modern 3-bedroom apartment in good condition is available for purchase in Haifa at property prop_001, priced at 2500000. The location of the property in Haifa Downtown provides easy access to shopping, dining, and sea views."
+  "similar_listings": [
+    {
+      "id": "prop_001",
+      "price": 2500000,
+      "bedrooms": 3,
+      "bathrooms": 2.0,
+      "rooms": 5,
+      "location": "Haifa Downtown",
+      "condition": "Good",
+      "description": "Beautiful 3-bedroom apartment in Haifa Downtown with modern kitchen and hardwood floors. Close to shopping, dining, and sea views.",
+      "distance": 0.2273300653582151
+    },
+    {
+      "id": "prop_004",
+      "price": 3200000,
+      "bedrooms": 3,
+      "bathrooms": 2.5,
+      "rooms": 5,
+      "location": "Jerusalem Center",
+      "condition": "Excellent",
+      "description": "Contemporary apartment in Jerusalem Center with city views, open floor plan, and energy-efficient systems.",
+      "distance": 0.421129737994125
+    },
+    {
+      "id": "prop_002",
+      "price": 3800000,
+      "bedrooms": 4,
+      "bathrooms": 3.0,
+      "rooms": 6,
+      "location": "Tel Aviv North",
+      "condition": "Excellent",
+      "description": "Luxury apartment in Tel Aviv North with panoramic city views, updated amenities, and smart home features.",
+      "distance": 0.42452008541576847
+    }
+  ],
+  "insight": "A modern 3-bedroom apartment in good condition is available for purchase in Haifa at property prop_001, priced at 2500000. The location of the property in Haifa Downtown provides easy access to shopping, dining, and sea views."
 }
 ```
 
@@ -180,4 +180,4 @@ AWS EC2 readiness notes:
   - ChromaDB: `/app/artifacts/chroma_db`
   - GGUF models: `/app/artifacts/models`
 
-The container runs as a non-root user and exposes port `8000`.
+The container runs as a non-root user and exposes port `8001`.

@@ -5,12 +5,14 @@
 `imageAnalyzer` is a FastAPI service for analyzing property photos. It downloads an image from a URL, preprocesses it for an EfficientNet-B0 based PyTorch model, predicts the room type, and returns a normalized condition score from 1 to 5. If the model confidence is below the configured threshold, the service returns `uncertain` and omits the condition score.
 
 Stack:
+
 - FastAPI for the HTTP API
 - PyTorch, torchvision, and timm for model inference
 - Pillow for image handling
 - Docker and Docker Compose for AWS EC2 deployment
 
 Minimum deployment target:
+
 - AWS EC2 `t3.small` or larger
 - Recommended minimum RAM: 2 GB for API-only runtime, more when training or loading larger checkpoints
 
@@ -39,6 +41,7 @@ flowchart TD
 ```
 
 Design decisions:
+
 - The controller only handles HTTP concerns and delegates inference work to the service layer.
 - `config.py` is the single source of truth for environment variables.
 - The model client encapsulates low-level PyTorch model setup and prediction formatting.
@@ -63,7 +66,7 @@ cp .env.example .env
 4. Start the API:
 
 ```bash
-uvicorn app:app --host 0.0.0.0 --port 8000 --reload
+uvicorn app:app --host 0.0.0.0 --port 8002 --reload
 ```
 
 ### Docker Deployment
@@ -78,10 +81,11 @@ docker compose up --build
 3. Verify service health:
 
 ```bash
-curl http://localhost:8000/health
+curl http://localhost:8002/health
 ```
 
 Mount points:
+
 - `/app/data/raw`
 - `/app/data/processed`
 - `/app/models`
@@ -137,6 +141,7 @@ Low-confidence response:
 Environment variables are loaded in [config.py](/d:/aiPycharm/aiPropertyTriangeProject/imageAnalyzer/config.py).
 
 Important settings:
+
 - `APP_NAME`: FastAPI application title
 - `APP_HOST`: Bind host for Uvicorn
 - `APP_PORT`: Service port
@@ -208,6 +213,7 @@ python -m compileall .
 ```
 
 Recommended next improvements:
+
 - Add integration tests that exercise a real checkpoint file
 - Add structured request logging middleware
 - Add CI validation for Docker build and pytest execution
@@ -215,8 +221,9 @@ Recommended next improvements:
 ## Deployment
 
 EC2 deployment notes:
+
 - Build on `t3.small` or larger as planned
-- Exposed container port: `8000`
+- Exposed container port: `8002`
 - Health endpoint: `GET /health`
 - Persistent volumes: raw data, processed data, model artifacts
 - Restart policy: `on-failure`
@@ -227,5 +234,5 @@ Example EC2 deployment flow:
 ```bash
 cp .env.example .env
 docker compose up --build -d
-curl http://localhost:8000/health
+curl http://localhost:8002/health
 ```

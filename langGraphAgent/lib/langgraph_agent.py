@@ -153,6 +153,25 @@ class PropertyAgent:
             return None
         return match.group(0).rstrip(").,;!?")
 
+    @staticmethod
+    def _extract_all_urls(text: str) -> List[str]:
+        """Extract all URLs from text, handling comma-separated or space-separated URLs."""
+        # Find all URLs in the text
+        matches = re.findall(r"https?://\S+", text, flags=re.IGNORECASE)
+        if not matches:
+            return []
+        
+        # Clean each URL and handle comma-separated URLs
+        urls = []
+        for match in matches:
+            cleaned = match.rstrip(").,;!?")
+            # Split by comma if multiple URLs are comma-separated
+            for url in cleaned.split(","):
+                url = url.strip()
+                if url:
+                    urls.append(url)
+        return urls
+
     def _planner_node(self, state: AgentState) -> AgentState:
         started_at = time.perf_counter()
         logger.info("Entering planner node")
@@ -205,16 +224,29 @@ class PropertyAgent:
                         "results": self.rag_client.search(retrieval_query, top_k=3),
                     }
                 elif tool_name == "image_analysis":
-                    image_url = self._extract_first_url(state["query"])
-                    if not image_url:
+                    image_urls = self._extract_all_urls(state["query"])
+                    if not image_urls:
                         raise ExternalAPIError(
                             "No image URL found in query for image analysis."
                         )
+                    
+                    # Analyze each image and concatenate results
+                    analysis_results = []
+                    for idx, image_url in enumerate(image_urls, 1):
+                        logger.info(
+                            "Analyzing image %d/%d: %s", idx, len(image_urls), image_url
+                        )
+                        analysis_result = self.image_client.analyze(image_url)
+                        analysis_results.append({
+                            "image_url": image_url,
+                            "analysis": analysis_result
+                        })
+                    
                     tool_results[tool_name] = {
-                        "query": image_url,
+                        "query": ", ".join(image_urls),
                         "summary": "Photo-based condition analysis retrieved or attempted.",
                         "description": self.tool_descriptions[tool_name],
-                        "results": self.image_client.analyze(image_url),
+                        "results": analysis_results,
                     }
                 logger.info("Executor completed tool=%s", tool_name)
             except ExternalAPIError as exc:
@@ -244,14 +276,50 @@ class PropertyAgent:
         logger.debug("Executor tool results: %s", tool_results)
         return state
 
+    def _format_tool_results_for_prompt(self, tool_results: Dict[str, Any]) -> str:
+        """Format tool results into a readable string for the synthesis prompt."""
+        formatted = []
+        for tool_name, result in tool_results.items():
+            formatted.append(f"\n{tool_name.upper()}:")
+            if "error" in result:
+                formatted.append(f"  Error: {result['error']}")
+            else:
+                formatted.append(f"  Summary: {result.get('summary', 'N/A')}")
+                
+                # Handle image analysis results with multiple images
+                if tool_name == "image_analysis" and isinstance(result.get("results"), list):
+                    if result["results"] and isinstance(result["results"][0], dict) and "image_url" in result["results"][0]:
+                        # Multiple images case
+                        for idx, img_result in enumerate(result["results"], 1):
+                            formatted.append(f"\n  Image {idx}: {img_result.get('image_url', 'N/A')}")
+                            analysis = img_result.get('analysis', {})
+                            if isinstance(analysis, dict):
+                                for key, value in analysis.items():
+                                    formatted.append(f"    {key}: {value}")
+                    else:
+                        # Single image case (backwards compatibility)
+                        formatted.append(f"  Results: {result.get('results', [])}")
+                else:
+                    # RAG or other tool results
+                    results = result.get("results", [])
+                    if isinstance(results, list) and results:
+                        formatted.append(f"  Found {len(results)} results")
+                        for item in results[:3]:  # Show first 3 results
+                            formatted.append(f"    - {item}")
+                    else:
+                        formatted.append(f"  Results: {results}")
+        
+        return "\n".join(formatted)
+
     def _synthesizer_node(self, state: AgentState) -> AgentState:
         started_at = time.perf_counter()
         logger.info("Entering synthesizer node")
+        formatted_results = self._format_tool_results_for_prompt(state["tool_results"])
         synthesis_prompt = (
             f"{self.surface_prompts[4]}\n\n"
             f"{self.surface_prompts[5]}\n\n"
             f"Query: {state['query']}\n"
-            f"Tool results: {state['tool_results']}"
+            f"Tool results: {formatted_results}"
         )
         logger.debug("Synthesizer prompt: %s", synthesis_prompt)
 
@@ -276,27 +344,67 @@ class PropertyAgent:
         return state
 
     def _fallback_synthesis(self, state: AgentState) -> str:
+        """Generate a synthesized answer by analyzing tool results directly."""
         tools = state["selected_tools"]
         tool_results = state["tool_results"]
+        
         if all("error" in result for result in tool_results.values()):
             return (
                 "The agent could not reach its external tools, so this answer is limited. "
                 "Please verify the RAG and image-analysis services and retry the request."
             )
-        if "image_analysis" in tools and "rag_search" in tools:
-            return (
-                "This request likely needs both listing retrieval and photo analysis. "
-                "Use listing data for facts and comparisons, then use images for visible "
-                "condition findings before giving a final recommendation."
-            )
-        if "image_analysis" in tools:
-            return (
-                "This request is primarily visual. Base the answer on what is visible in "
-                "the property photos and clearly note any uncertainty."
-            )
+        
+        answer_parts = []
+        
+        # Process image analysis results
+        if "image_analysis" in tool_results and "error" not in tool_results["image_analysis"]:
+            image_results = tool_results["image_analysis"].get("results", [])
+            if image_results:
+                answer_parts.append("Image Analysis Findings:")
+                for idx, img_result in enumerate(image_results, 1):
+                    if isinstance(img_result, dict):
+                        analysis = img_result.get("analysis", {})
+                        room_type = analysis.get("room_type", "Unknown")
+                        condition = analysis.get("condition_score", "N/A")
+                        confidence = analysis.get("confidence", "N/A")
+                        answer_parts.append(
+                            f"  Image {idx}: {room_type} - Condition Score: {condition} "
+                            f"(Confidence: {confidence})"
+                        )
+        
+        # Process RAG search results
+        if "rag_search" in tool_results and "error" not in tool_results["rag_search"]:
+            rag_results = tool_results["rag_search"].get("results", [])
+            if rag_results:
+                answer_parts.append("\nListing Data Retrieved:")
+                for idx, item in enumerate(rag_results[:3], 1):
+                    answer_parts.append(f"  {idx}. {item}")
+        
+        # Synthesize a combined conclusion
+        if answer_parts:
+            answer_parts.append("\nSynthesis:")
+            if "image_analysis" in tools and "rag_search" in tools:
+                answer_parts.append(
+                    "Based on both visual inspection and listing data, the property "
+                    "appears to align with the analyzed characteristics. Review the image "
+                    "condition scores against comparable listings for a full assessment."
+                )
+            elif "image_analysis" in tools:
+                answer_parts.append(
+                    "Based on visual analysis, the property shows the identified room types "
+                    "and condition levels. Consider these findings when making a decision."
+                )
+            else:
+                answer_parts.append(
+                    "Based on the retrieved listing data, these are the comparable properties "
+                    "and market factors relevant to your query."
+                )
+            
+            return "\n".join(answer_parts)
+        
         return (
-            "This request is primarily about listing facts or market context, so the "
-            "answer should be grounded in retrieved property data."
+            "Analysis completed but results are limited. Please verify the external "
+            "services are functioning properly and retry."
         )
 
     def invoke(self, query: str) -> Dict[str, Any]:

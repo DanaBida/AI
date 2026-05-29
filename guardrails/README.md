@@ -18,6 +18,7 @@ flowchart LR
 ```
 
 Design notes:
+
 - Controllers stay thin and only translate HTTP traffic into service calls.
 - Service methods own response-contract mapping.
 - The NeMo wrapper is isolated in `lib/` so policy runtime details stay out of controllers.
@@ -29,13 +30,13 @@ Design notes:
 1. Create a virtual environment.
 2. Install dependencies with `pip install -r requirements.txt`.
 3. Copy `.env.example` to `.env` and adjust values as needed.
-4. Run `uvicorn app:app --reload --host 0.0.0.0 --port 8010`.
+4. Run `uvicorn app:app --reload --host 0.0.0.0 --port 8011`.
 
 ### Docker Deployment
 
 1. Copy `.env.example` to `.env`.
 2. Run `docker compose up --build`.
-3. Check `http://localhost:8010/health`.
+3. Check `http://localhost:8011/health`.
 
 ## API Documentation
 
@@ -92,7 +93,7 @@ All environment variables are loaded only in `config.py`.
 ## Deployment
 
 - Base image: `python:3.11-slim`
-- Default service port: `8010`
+- Default service port: `8011`
 - Runtime user: non-root `appuser`
 - Health endpoint: `/health`
 - Logs: stdout/stderr via standard FastAPI/Uvicorn logging
