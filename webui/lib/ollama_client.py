@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -43,20 +44,28 @@ class OllamaClient:
         url = f"{self._base_url}{self._chat_endpoint}"
         payload = {
             "model": self._model,
-            "stream": False,
+            "stream": True,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message},
             ],
         }
 
-        resp = requests.post(url, json=payload, timeout=self._timeout_seconds)
+        resp = requests.post(url, json=payload, timeout=self._timeout_seconds, stream=True)
         resp.raise_for_status()
 
-        data = resp.json()
-        # Ollama /api/chat returns {"message": {"role": "...", "content": "..."}, ...}
-        content = (data.get("message") or {}).get("content") or ""
+        content = ""
+        raw_data = None
+
+        # Process streamed response (newline-delimited JSON)
+        for line in resp.iter_lines():
+            if line:
+                data = json.loads(line)
+                raw_data = data
+                if data.get("message"):
+                    content += data["message"].get("content", "")
+
         if not content.strip():
             content = "[No response]"
 
-        return OllamaChatResult(content=content, raw=data)
+        return OllamaChatResult(content=content, raw=raw_data or {})

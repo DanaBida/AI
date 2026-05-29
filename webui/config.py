@@ -21,7 +21,7 @@ class Config:
     APP_TITLE = os.getenv("WEBUI_APP_TITLE", "aiPropertyTriage WebUI")
     STREAMLIT_HOST = os.getenv("WEBUI_HOST", "0.0.0.0")
     STREAMLIT_PORT = int(os.getenv("WEBUI_SERVER_PORT", "8501"))
-    REQUEST_TIMEOUT_SECONDS = int(os.getenv("WEBUI_REQUEST_TIMEOUT_SECONDS", "60"))
+    REQUEST_TIMEOUT_SECONDS = int(os.getenv("WEBUI_REQUEST_TIMEOUT_SECONDS", "120"))
 
     OLLAMA_HOST = os.getenv("OLLAMA_HOST", "http://127.0.0.1")
     OLLAMA_PORT = int(os.getenv("OLLAMA_PORT", "11434"))
