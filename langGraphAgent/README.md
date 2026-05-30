@@ -1,5 +1,23 @@
 # LangGraph Agent Service
 
+## Service Goal
+
+Aggregates and summarizes results from RAG and Image Analyzer.
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the service:
+
+   ```sh
+   uvicorn app:app --host 0.0.0.0 --port 8010
+   ```
+
 ## Overview
 
 This service exposes `POST /agent/run` for complex property questions. It uses a three-step agent flow:

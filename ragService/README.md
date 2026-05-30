@@ -1,5 +1,23 @@
 # RAG Property Listing Service
 
+## Service Goal
+
+Retrieves market information using retrieval-augmented generation.
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the service:
+
+   ```sh
+   uvicorn app:app --host 0.0.0.0 --port 8001
+   ```
+
 ## Overview
 
 This service exposes a FastAPI API for retrieval-augmented property analysis. It searches a persistent ChromaDB collection of synthetic property listings, formats the best matches into prompt context, and generates concise insight text with a Llama.cpp-compatible GGUF model.

@@ -1,5 +1,23 @@
 # Guardrails Service
 
+## Service Goal
+
+This service checks input and output for real estate relevance and reliability.
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the service:
+
+   ```sh
+   uvicorn app:app --host 0.0.0.0 --port 8011
+   ```
+
 ## Overview
 
 `guardrails` is a FastAPI service that will validate inbound listing text and outbound AI-generated property reports. Phase 1 establishes the service skeleton, centralized configuration, and stable API contracts so the NeMo Guardrails runtime can be added cleanly in Phase 2.

@@ -1,5 +1,23 @@
 # Image Analyzer Service
 
+## Service Goal
+
+Analyzes room quality from images.
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the service:
+
+   ```sh
+   uvicorn app:app --host 0.0.0.0 --port 8002
+   ```
+
 ## Overview
 
 `imageAnalyzer` is a FastAPI service for analyzing property photos. It downloads an image from a URL, preprocesses it for an EfficientNet-B0 based PyTorch model, predicts the room type, and returns a normalized condition score from 1 to 5. If the model confidence is below the configured threshold, the service returns `uncertain` and omits the condition score.

@@ -1,5 +1,23 @@
 # aiPropertyTriage WebUI
 
+## Service Goal
+
+This is the user-facing interface for submitting property listings and images.
+
+## Running Locally
+
+1. Install dependencies:
+
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the app:
+
+   ```sh
+   streamlit run app.py --server.address=0.0.0.0 --server.port=8501
+   ```
+
 Streamlit-based WebUI for `aiPropertyTriageProject`, designed around a clean service layout and prepared for local Ollama chat, n8n listing submission, prompt iteration, and container deployment.
 
 ## Overview
