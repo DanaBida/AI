@@ -1,11 +1,13 @@
 """
 FastAPI router for LangGraph Agent endpoint.
 """
+import logging
 from fastapi import APIRouter, HTTPException
 
 from models.agent_types import AgentQuery, AgentResponse
 from services.agent_service import AgentService
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -21,7 +23,8 @@ def run_agent(query: AgentQuery):
     except TimeoutError as exc:
         raise HTTPException(status_code=504, detail=str(exc)) from exc
     except Exception as exc:
+        logger.exception("LangGraph agent failed with error")
         raise HTTPException(
             status_code=500,
-            detail="Unexpected error while running the LangGraph agent.",
+            detail=f"LangGraph agent error: {type(exc).__name__}: {str(exc)}",
         ) from exc

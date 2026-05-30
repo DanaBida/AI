@@ -1,125 +1,723 @@
 {
+  "name": "Final Project",
   "nodes": [
     {
-      "name": "WebhookTrigger",
-      "type": "n8n-nodes-base.webhookTrigger",
-      "typeVersion": 1,
-      "position": [250, 300],
-      "credentials": {
-        "someCredential": "someValue"
-      },
-      "properties": {
-        "triggerOptions": {
-          "method": "POST"
-        },
-        "responseOptions": {
-          "parseBody": true
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.pass }}",
+              "value2": "={{ true }}"
+            }
+          ]
         }
       },
-      "connections": ["main"]
-    },
-    {
-      "name": "GuardrailsInputCheck",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [250, 100],
-      "credentials": {
-        "someCredential": "someValue"
-      },
-      "properties": {
-        "method": "POST",
-        "endpoint": "{{$node[\"WebhookTrigger\"].json[\"guardrailsInputEndpoint\"]}}",
-        "headers": {
-          "Content-Type": "application/json"
-        },
-        "body": "{{$node[\"WebhookTrigger\"].json[\"guardrailsInputBody\"]}}"
-      },
-      "connections": ["main"]
-    },
-    {
       "name": "IFPassFailBranch",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [250, 0],
+      "position": [
+        256,
+        368
+      ],
       "properties": {
         "condition": "{{$node[\"GuardrailsInputCheck\"].json[\"response\"].data.pass}}"
       },
-      "connections": ["main", "RejectionPath", "SuccessPath"]
+      "connections": [
+        "main",
+        "RejectionPath",
+        "SuccessPath"
+      ],
+      "id": "0905d3c6-e3a1-4011-b431-a6f3987cc19f"
     },
     {
-      "name": "InformationExtractor",
-      "type": "n8n-nodes-base.informationExtractor",
-      "typeVersion": 1,
-      "position": [400, 300],
-      "properties": {
-        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"promptTemplate\"]}}"
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "listing-triage",
+        "options": {}
       },
-      "connections": ["SuccessPath"]
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -224,
+        368
+      ],
+      "id": "a050d39f-87b0-4024-968f-c0a7ce3d9c87",
+      "name": "Webhook",
+      "webhookId": "b468e713-9bec-4cbf-88ff-3f64d66f3d19"
     },
     {
-      "name": "AIAgent",
-      "type": "n8n-nodes-base.aiAgent",
-      "typeVersion": 1,
-      "position": [400, 200],
-      "properties": {
-        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"agentPrompt\"]}}"
-      },
-      "connections": ["InformationExtractor"]
-    },
-    {
-      "name": "LLMChain",
-      "type": "n8n-nodes-base.llmChain",
-      "typeVersion": 1,
-      "position": [400, 100],
-      "properties": {
-        "promptTemplate": "{{$node[\"WebhookTrigger\"].json[\"llmChainPrompt\"]}}"
-      },
-      "connections": ["AIAgent"]
-    },
-    {
-      "name": "GuardrailsOutputCheck",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [250, 400],
-      "credentials": {
-        "someCredential": "someValue"
-      },
-      "properties": {
-        "method": "POST",
-        "endpoint": "{{$node[\"WebhookTrigger\"].json[\"guardrailsOutputEndpoint\"]}}",
-        "headers": {
-          "Content-Type": "application/json"
+      "parameters": {
+        "text": "={{ $('Webhook').item.json.body.listing_description }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "description",
+              "description": "=description of the property",
+              "required": true
+            },
+            {
+              "name": "property_type",
+              "description": "the type of the property"
+            },
+            {
+              "name": "location",
+              "description": "where the property located"
+            },
+            {
+              "name": "price",
+              "type": "number",
+              "description": "the price of the property"
+            },
+            {
+              "name": "currency",
+              "description": "the currency of the price"
+            },
+            {
+              "name": "number_of_rooms",
+              "type": "number",
+              "description": "the number of rooms in the property if mentioned"
+            },
+            {
+              "name": "key_features",
+              "description": "description of key features the property has"
+            }
+          ]
         },
-        "body": "{{$node[\"LLMChain\".json[\"output\"]}}"
+        "options": {
+          "systemPromptTemplate": "#SYSTEM PROMPT\n\nYour task is to extract structured property information from the user input and return a valid JSON object, without wrapping it with ```json annotation.\n\n#OUTPUT FORMAT (STRICT)\n\nReturn ONLY a valid JSON object - output MUST start with `{` and end with `}`, matching this exact schema:\n\n{\n  \"description\": \"\",\n  \"property_type\": \"\",\n  \"location\": \"\",\n  \"price\": 0,\n  \"currency\": \"\",\n  \"number_of_rooms\": 0,\n  \"key_features\": [],\n  \"certifications\": []\n}\n\n#EXTRACTION RULES (HARD CONSTRAINTS)\n1. DESCRIPTION FIELD (RAW PASSTHROUGH)\nMust contain the full original input text\nMust be copied exactly as provided\nDo not modify in any way\nDo not summarize\nDo not normalize whitespace or punctuation\n2. NO INFERENCE RULE\nExtract ONLY explicitly stated facts\nNever assume missing information\nNever enrich or complete missing fields\n3. NO TRANSFORMATION RULE\nDo NOT rephrase any extracted field\nDo NOT normalize wording\nDo NOT correct spelling\nOnly exception: numeric conversion for price and room count\n4. FIELD RULES\nproperty_type\nMust be an exact substring from the input text\nDo not normalize, rephrase, or infer\nIf not explicitly present, omit the field\nlocation\nMust be an exact substring from the input text\nDo not normalize or infer\nIf not explicitly present, omit the field\nprice\nNumeric only\nRemove all currency symbols and non numeric characters\nIf not explicitly present, omit the field\ncurrency\nInclude only if explicitly stated in the text (e.g., USD, EUR, ILS)\nMust be a string\nIf not explicitly present, omit the field\nnumber_of_rooms\nMust be a numeric value only\nMust be explicitly tied to rooms in the text\nIf not explicitly present, omit the field\nkey_features\nMust be exact substrings from the input text\nDo not merge, split, paraphrase, or normalize\nIf none exist, return an empty array []\ncertifications\nInclude only explicitly mentioned formal certifications\nIf none exist, return an empty array []\n\n#OUTPUT RULES\nOutput must be valid JSON only\nAll values must strictly follow the field rules above\nIf multiple valid values exist for a field, extract only the first occurrence\nDo not infer missing data\nDo not add extra fields beyond the defined schema\nScalars: omit field if missing\nArrays: always include them ([] if empty)\n\n#ABSOLUTE OUTPUT CONSTRAINT:\n- DO NOT wrap output in ``` or ```json\n- DO NOT use markdown of any kind\n- DO NOT include backticks, labels, or formatting\n- Output MUST start with { and end with }\n- Any other format is invalid\n\n#MISSING VALUES RULE (CRITICAL):\n- If a value is not explicitly present in the input, OMIT the field completely\n- NEVER output null\n- NEVER output empty strings unless explicitly present in input\n\n#EXAMPLE: \n\"{ \"description\": \"Modern 3-bedroom apartment with good condition in Haifa\", \"property_type\": \"apartment\", \"location\": \"Haifa\", \"price\": 800000, \"currency\": \"ILS\", \"number_of_rooms\": 3, \"key_features\": \"Modern\" }\""
+        }
       },
-      "connections": ["LLMChain"]
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [
+        448,
+        256
+      ],
+      "id": "2f323c2a-4454-4c4c-9e5d-34aa0b93e4cf",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a tool orchestration agent inside an n8n AI Agent workflow.\n\nYour job is ONLY to:\n1. Decide which tools are needed\n2. Execute the tools\n3. Return the REAL tool outputs\n\nYou must NEVER invent, simulate, mock, estimate, or fabricate tool results.\n\nIMPORTANT:\n- If a tool is available and needed, you MUST call it.\n- Never generate fake outputs for a tool.\n- Never pretend a tool was executed.\n- If a tool fails or is unavailable, report that explicitly.\n- All returned data must originate from actual tool responses.\n\nINPUT DATA:\nStructured Property Data:\n{{ JSON.stringify($json.output, null, 2) }}\n\nImage URLs:\n{{ $('Webhook').item.json.body.image_urls }}\n\nAVAILABLE TOOLS\n\nTool: imageAnalyzer\nPurpose:\nAnalyze property images.\n\nInput:\n{\n  \"image_url\": \"\"\n}\n\nUse when:\n- image URLs exist\n\n--------------------------------------------------\n\nTool: rag_search\nPurpose:\nRetrieve similar listings and pricing context.\n\nInput:\n{\n  \"description\": \"\"\n}\n\nUse when:\n- structured property description exists\n\n--------------------------------------------------\n\nTool: langGraphAgent\nPurpose:\nAdvanced reasoning over property + market context.\n\nInput:\n{\n  \"query\": \"\"\n}\n\nUse when:\n- both image analysis and market context are available\n- deeper reasoning is needed\n\nTOOL EXECUTION RULES\n\n1. If BOTH exist:\n   - structured property description\n   - image URLs\n\n   THEN:\n\n   - Call langGraphAgent FIRST.\n   - Assume langGraphAgent can internally use imageAnalyzer and rag_search.\n   - Do NOT call imageAnalyzer or rag_search separately.\n\n   Fallback:\n   - If langGraphAgent fails, times out, or returns an error:\n       - Call imageAnalyzer for each image.\n       - Call rag_search for structured property description.\n       - Return those results.\n\n2. If ONLY image URLs exist:\n   - Call imageAnalyzer for each image.\n\n3. If ONLY property description exists:\n   - Call rag_search.\n\n4. Never execute duplicate tools when langGraphAgent already provides combined reasoning.\n\n5. Never invent tool outputs.\n\n6. Return only actual tool responses.\n\nOUTPUT RULES\n\nAfter executing tools, return ONLY valid JSON.\n\nDo not explain anything.\n\nSchema:\n\n{\n  \"tool_results\": {\n    \"image_analysis\": [],\n    \"rag_results\": {},\n    \"langgraph_result\": {}\n  },\n  \"tools_used\": [],\n  \"tool_calls\": []\n}\n\nCRITICAL:\ntool_results must contain ONLY actual tool responses.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        768,
+        256
+      ],
+      "id": "078e6797-4e7b-47e3-b9c2-50251788b897",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a senior real estate analyst working inside an automated property evaluation pipeline.\n\nYour task is to generate a final, publishable property listing brief based ONLY on provided structured inputs.\n\nYou do NOT call tools.\nYou do NOT infer missing facts.\nYou do NOT hallucinate or generalize beyond provided inputs.\n\nINPUT DATA\n\nExtracted listing fields (structured user submission):\n{{JSON.stringify($('Information Extractor').item.json.output, null, 2)}}\n\nTools output:\n{{ $json.output }}\n\nImage analysis results are in image_analysis field.\nRAG output (similar listings + market context) is in rag_results field.\n\nAll inputs are precomputed and are the ONLY allowed source of truth.\n\nSTRICT RULES\nDo NOT invent missing information\nDo NOT assume unknown values\nDo NOT modify numeric values (price, rooms, etc.)\nDo NOT introduce external knowledge not explicitly present in inputs\nDo NOT compare with external markets unless explicitly stated in RAG\nDo NOT generate price benchmarks\nDo NOT infer investment value, demand, or market positioning\nDo NOT repeat raw JSON inputs\n\nIf a value is missing → OMIT the field completely\n\nINPUT USAGE RULES\nListing Fields\n\nUse exactly as provided. No inference.\n\nImage Analysis\n\nUse ONLY for:\n\nroom type identification\ncondition score extraction\n\nDo NOT infer renovation needs beyond visible condition scores.\n\nRAG Results (STRICT)\n\nYou may ONLY:\n\nsummarize explicitly stated insights\nparaphrase provided similar listings\nrepeat explicitly stated price ranges or conclusions\n\nYou MUST NOT:\n\ncompute price positioning\ninfer “cheap / expensive / high potential”\ncompare cities or markets unless explicitly included in RAG\nextend market logic beyond what is written\n\nIf RAG does not explicitly state something → do not include it\n\nSOURCE OF TRUTH PRIORITY\n\nThe orchestration layer may execute one of the following:\n\nA) langGraphAgent\n\nOR\n\nB) imageAnalyzer\n\nOR\n\nC) rag_search\n\nDetermine which tool output is available and use only the corresponding output as the source of truth.\n\nIF langgraph_result exists and is not empty:\n\nTreat langgraph_result as the ONLY authoritative tool output.\nUse only information explicitly present in langgraph_result (it nested in its result the image_analysis and rag results).\n\nELSE IF langgraph_result is missing, null, or empty:\n\nimage_analysis and rag_results are considered independent and equal fallback sources.\nUse image_analysis if available.\nUse rag_results if available.\nDo NOT merge reasoning across tools unless explicitly required by schema fields.\nEach field must be populated strictly from its corresponding tool output.\n\nNever combine langgraph_result with any other tool output.\n\nAll inputs are precomputed and are the ONLY allowed source of truth.\n\n\nOUTPUT FORMAT (STRICT)\n\nReturn a valid JSON object only.\n\nDo NOT wrap output in orjson.\n\nThe output MUST be a single-line JSON string:\n\nNo newline characters (\\n) anywhere in the output\nNo indentation or formatting\nEntire JSON must be continuous text\nOutput MUST start with { and end with }\n\nREQUIRED JSON SCHEMA\n\n{\n\"title\": \"\",\n\"summary\": \"\",\n\"property_details\": {\n\"type\": \"\",\n\"location\": \"\",\n\"price\": \"\",\n\"currency\": \"\",\n\"rooms\": \"\",\n\"features\": []\n},\n\"visual_assessment\": {\n\"overall_condition_score\": null,\n\"room_breakdown\": [\n{\n\"room_type\": \"\",\n\"condition_score\": null\n}\n]\n},\n\"market_context\": {\n\"summary\": \"\",\n\"price_positioning\": \"\",\n\"similar_properties_summary\": []\n},\n\"final_recommendation\": \"\",\n\"confidence_score\": 0.0\n}\n\nABSOLUTE OUTPUT CONSTRAINTS\nNo markdown\nNo backticks\nNo explanations\nNo indentation\nNo newline characters anywhere (\\n)\nNo partial JSON output\nMust be valid JSON parseable as a single line\nMust start with { and end with }\n\nQUALITY GOAL\n\nOutput must be:\n\nstrictly factual\nfully grounded in provided inputs\ndeterministic\nfree of inferred market intelligence\nsafe for automated publishing pipelines",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        544,
+        640
+      ],
+      "id": "ce8b8142-91a6-45a2-ac3f-d6712c18ea90",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8011/check/input",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"apartment with {{ $('Webhook').item.json.body.listing_description }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        48,
+        560
+      ],
+      "id": "dbdb3af8-0c76-4394-befb-99541423b1a0",
+      "name": "Guardrails input check"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        352,
+        576
+      ],
+      "id": "da1d2ce4-8034-4e6a-a7f0-d1b08d5f07b2",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HaMP3PPmyvg3kgtm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        768,
+        448
+      ],
+      "id": "913caed4-4460-4f62-9d4e-ae39d24de1ee",
+      "name": "Google Gemini Chat Model2",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HaMP3PPmyvg3kgtm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8001/query",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"description\": \"{{ $json.output.description }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1088,
+        240
+      ],
+      "id": "1f587aaf-3878-4918-9dff-32c025f2c941",
+      "name": "RAG"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8002/analyse",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"image_url\": \"{{ $('Webhook').item.json.body.image_urls[0] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        1104,
+        416
+      ],
+      "id": "abb37c96-36b5-48ac-8ffd-3281f4ece7d1",
+      "name": "Image Analyzer"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8010/agent/run",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n\"query\": \"Analyze the combined data for: {{$json.output.description}}, incorporating the image analysis of: {{ $('Webhook').item.json.body.image_urls }} and the RAG market search results to determine value alignment.\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        960,
+        448
+      ],
+      "id": "2fb4d968-dc73-46da-a869-a8e1c7fe30a8",
+      "name": "LangGraph"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        560,
+        800
+      ],
+      "id": "41e8ff8e-4efe-4faf-a9f1-3df9d6cb17d9",
+      "name": "Google Gemini Chat Model3",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "HaMP3PPmyvg3kgtm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8011/check/output",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": {{ JSON.stringify($json.text, null, 2) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        640
+      ],
+      "id": "06a2f4b8-6387-4375-9f40-dd12d1b497a9",
+      "name": "Guardrails output check"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5bb1feb0-c443-45ac-ab4f-d29646bf83c3",
+              "leftValue": "",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1152,
+        640
+      ],
+      "id": "af71dc2d-0513-4f6c-a4cc-a6b7c3616bc6",
+      "name": "IfPassFailBranch"
+    },
+    {
+      "parameters": {
+        "message": "The LLM response found fabricated. ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chat",
+      "typeVersion": 1.3,
+      "position": [
+        1088,
+        896
+      ],
+      "id": "9170abc2-bfa3-4745-94e5-49652af46a0e",
+      "name": "Send to human review",
+      "webhookId": "df1b1b8c-e72d-45f5-b977-c6f02c970c1a"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ ($json.safe_text_json.property_details.type || '').toLowerCase()}}",
+                    "rightValue": "=^(apartment|house|villa)$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "regex"
+                    },
+                    "id": "06097ecd-307b-4de2-8e66-39fdec12bede"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b64973f0-02e8-441d-9621-277d58d20e4c",
+                    "leftValue": "={{ ($json.safe_text_json.property_details.type || '').toLowerCase()}}",
+                    "rightValue": "^(office|retail|industrial)$",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "none"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1520,
+        624
+      ],
+      "id": "9d66acd2-7982-4085-9419-46e877d3e7b3",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8003/residential-team",
+        "sendBody": true,
+        "contentType": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.safe_text_json.title }}"
+            },
+            {
+              "name": "summary",
+              "value": "={{ $json.safe_text_json.summary }}"
+            },
+            {
+              "name": "property_details",
+              "value": "={{ $json.safe_text_json.property_details }}"
+            },
+            {
+              "name": "visual_assesment",
+              "value": "={{ $json.safe_text_json.visual_assessment }}"
+            },
+            {
+              "name": "market_context",
+              "value": "={{ $json.safe_text_json.market_context }}"
+            },
+            {
+              "name": "final_recommendation",
+              "value": "={{ $json.safe_text_json.final_recommendation }}"
+            },
+            {
+              "name": "confidence_score",
+              "value": "={{ $json.safe_text_json.confidence_score }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1760,
+        512
+      ],
+      "id": "93a1fb8c-778d-4c4d-ba8c-0bcd8fb90f04",
+      "name": "residential team webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4c3be7f0-c7fe-4ce1-9127-e90e9b8a84ca",
+              "name": "safe_text",
+              "value": "={{ $json.safe_text }}",
+              "type": "string"
+            },
+            {
+              "id": "8636e6f8-7b4c-4c4a-9f82-9edd4c91dc60",
+              "name": "safe_text_json",
+              "value": "={{ JSON.parse($json.safe_text) }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1344,
+        624
+      ],
+      "id": "d52d4e56-8a02-43f8-a6ce-4ef686e210e0",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8003/commercial-team",
+        "sendBody": true,
+        "contentType": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "={{ $json.safe_text_json.title }}"
+            },
+            {
+              "name": "summary",
+              "value": "={{ $json.safe_text_json.summary }}"
+            },
+            {
+              "name": "property_details",
+              "value": "={{ $json.safe_text_json.property_details }}"
+            },
+            {
+              "name": "visual_assesment",
+              "value": "={{ $json.safe_text_json.visual_assessment }}"
+            },
+            {
+              "name": "market_context",
+              "value": "={{ $json.safe_text_json.market_context }}"
+            },
+            {
+              "name": "final_recommendation",
+              "value": "={{ $json.safe_text_json.final_recommendation }}"
+            },
+            {
+              "name": "confidence_score",
+              "value": "={{ $json.safe_text_json.confidence_score }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1760,
+        720
+      ],
+      "id": "7b85b2f1-f287-4d6c-8d83-b9ed810a57f6",
+      "name": "commercial team webhook"
     }
   ],
-  "connections": [
-    {
-      "source": "WebhookTrigger",
-      "target": "GuardrailsInputCheck"
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Guardrails input check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    {
-      "source": "GuardrailsInputCheck",
-      "target": "IFPassFailBranch"
+    "IFPassFailBranch": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    {
-      "source": "IFPassFailBranch",
-      "target": "InformationExtractor",
-      "condition": true
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    {
-      "source": "InformationExtractor",
-      "target": "AIAgent"
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Guardrails output check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    {
-      "source": "AIAgent",
-      "target": "LLMChain"
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
-    {
-      "source": "LLMChain",
-      "target": "GuardrailsOutputCheck"
+    "Guardrails input check": {
+      "main": [
+        [
+          {
+            "node": "IFPassFailBranch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Analyzer": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LangGraph": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model3": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardrails output check": {
+      "main": [
+        [
+          {
+            "node": "IfPassFailBranch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IfPassFailBranch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send to human review",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "residential team webhook",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "commercial team webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
-  ]
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "7c18a9b8-5cd2-4e16-b3b8-be84ffa0374a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2ff29cbabae7046fbb144689ed02d5150140083aeacb8986f87a405b6e7da509"
+  },
+  "id": "lSEMX6X6a505mIeR",
+  "tags": []
 }

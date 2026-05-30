@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  leads-service:
+    build: .
+    container_name: leads-service
+    ports:
+      - '8003:8003'
+    restart: unless-stopped
